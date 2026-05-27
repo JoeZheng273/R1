@@ -107,7 +107,7 @@ void Robot_Init(void)
   /* ----- PID Controler Start ----- */
   HAL_TIM_Base_Start_IT(&htim6);
   /* ------------ Ready ------------ */
-  // Safe_task_Back_to_zero();
+  Safe_task_Back_to_zero();
   
 }
 

@@ -58,7 +58,7 @@ static void RC_FSM(void)
       }
       else
       {
-        user_debug_test_handler(0x40);
+        // user_debug_test_handler(0x40);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
@@ -74,7 +74,7 @@ static void RC_FSM(void)
       }
       else
       {
-        user_debug_test_handler(0x08);
+        // user_debug_test_handler(0x08);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
@@ -129,7 +129,7 @@ static void RC_FSM(void)
               DataIndex = (RxIndex + 1)%4;
               RC_RxCplt_Flag = 1;
               NotTail = 1;
-              user_debug_test_handler(0xF0);
+              // user_debug_test_handler(0xF0);
               RC_STATE = RC_FSM_ABNORMAL;
             }
           }
@@ -166,7 +166,7 @@ static void RC_FSM(void)
         DataIndex = (RxIndex + 1)%4;
         RC_RxCplt_Flag = 1;
         NotTail = 0;
-        user_debug_test_handler(0x0F);
+        // user_debug_test_handler(0x0F);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
@@ -511,6 +511,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_UART_Receive_IT(&huart7,&RC_RxData,1);
     RC_FSM(); // 调用状态机.
     ReceiveNum++;
+  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  user_debug_test_handler(0xAA);
+  if(huart->Instance == UART7)
+  {
+    __HAL_UART_CLEAR_NEFLAG(&huart7);
+    HAL_UART_RxCpltCallback(&huart7);
   }
 }
 

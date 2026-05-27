@@ -60,12 +60,23 @@ static void Safe_task_AutoTaskUpdate(void)
   {
     if(!AutoTaskCounter)
     {
+      AutoTaskCounter = 0;
       AutoTask = 0;
     }
     else {
       AutoTaskCounter--;
     }
   }
+}
+
+_Bool Safe_task_GetHighLim(void)
+{
+  return (LimFlag[0] || LimFlag[2]);
+}
+
+_Bool Safe_task_GetLowLim(void)
+{
+  return (LimFlag[1] || LimFlag[3]);
 }
 
 void Safe_task_Update_LimFlag(void)
@@ -88,12 +99,12 @@ _Bool Safe_task_Get_LimFlag(uint16_t Key_ID)
   }
 }
 
-_Bool Saft_task_GetAutoTaskFlag(void)
+_Bool Safe_task_GetAutoTaskFlag(void)
 {
   return AutoTask;
 }
 
-_Bool Saft_task_ResetAutoTaskFlag(void)
+_Bool Safe_task_ResetAutoTaskFlag(void)
 {
   Critical_Enter();
   AutoTaskCounter = 0;

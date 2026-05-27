@@ -11,8 +11,12 @@ void Safe_task_TIM_PeriodCallback(void);
 
 void Safe_task_Back_to_zero(void);
 
-_Bool Saft_task_GetAutoTaskFlag(void);
+_Bool Safe_task_GetAutoTaskFlag(void);
 
-_Bool Saft_task_ResetAutoTaskFlag(void);
+_Bool Safe_task_ResetAutoTaskFlag(void);
+
+_Bool Safe_task_GetHighLim(void);
+
+_Bool Safe_task_GetLowLim(void);
 
 #endif

@@ -20,16 +20,16 @@
 
 #define OUTLOOP_PERIOD                5
 #define HIGH_NUM                      6
-#define HIGH_delta                    (0.2139f * 4.0f)//0.02139f
+#define HIGH_delta                    (0.2139f * 4.0f)              //0.02139f
 #define Angle_delta                   (0.672f * 4.0f)
 #define INNER_Alpha                   3.0f
 #define ERROR_LIM                     0.25f
-#define PLATFORM_HIGH_BASE            0.1f        //  unit:m.
-#define PLATFORM_HIGH_MAX             1.0f
+#define PLATFORM_HIGH_BASE            0.22f                         //  unit:m.
+#define PLATFORM_HIGH_MAX             0.6f
 #define PLATFORM_HIGH_MIN             PLATFORM_HIGH_BASE
 #define fAlpha                        0.7f
 
-static const float HighForm[HIGH_NUM] = {0.2f,0.4f,0.6f,0.8f,1.0f};
+static const float HighForm[HIGH_NUM] = {0.2f,0.4f,0.6f,0.6f,0.6f};
 
 static PID_t PID_M[2] = {NULL};
 static PID_t PID_S[2] = {NULL};
@@ -224,9 +224,9 @@ void PlatForm_High_Down(void)
 
 void PlatForm_High_Add(void)
 {
-  if(Saft_task_GetAutoTaskFlag())
+  if(Safe_task_GetAutoTaskFlag())
   {
-    Saft_task_ResetAutoTaskFlag();
+    Safe_task_ResetAutoTaskFlag();
   }
   Critical_Enter();
   float tmp = High;
@@ -239,9 +239,9 @@ void PlatForm_High_Add(void)
 
 void PlatForm_High_Sub(void)
 {
-  if(Saft_task_GetAutoTaskFlag())
+  if(Safe_task_GetAutoTaskFlag())
   {
-    Saft_task_ResetAutoTaskFlag();
+    Safe_task_ResetAutoTaskFlag();
   }
   Critical_Enter();
   float tmp = High;
@@ -254,7 +254,7 @@ void PlatForm_High_Sub(void)
 
 void PlatForm_High_Stop(void)
 {
-  if(!Saft_task_GetAutoTaskFlag())
+  if(!(Safe_task_GetAutoTaskFlag() || TargetExecute))
   {
     Critical_Enter();
     HighAngle = PV_M.Angle;
@@ -333,8 +333,10 @@ void PlatForm_TIM_PeriodCallback(void)
       PID_GetOutput_f(PID_S[0],&SP_S[1]);
     }
   /* --------------------------------------------- */
-    PIDf_Control(SP_M[1] * (1.0f - (tmp * INNER_Alpha)),PV_M.Omega,PID_M[1],&CO_M);
-    PIDf_Control(SP_S[1] * (1.0f + (tmp * INNER_Alpha)),PV_S.Omega,PID_S[1],&CO_S);
+    float tmpSP_M = SP_M[1] * (1.0f - (tmp * INNER_Alpha));
+  /* --------------------------------------------- */
+    PIDf_Control(tmpSP_M,PV_M.Omega,PID_M[1],&CO_M);
+    PIDf_Control(SP_S[1] + tmpSP_M,PV_S.Omega,PID_S[1],&CO_S);
     PIDf_Control(SP_c,PV_c.Omega,PID_c,&CO_c);
   /* --------------------------------------------- */
     Plat_Send_CAN_Cmd(CO_c,CO_M,CO_S,0);

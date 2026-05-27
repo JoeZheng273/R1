@@ -25,7 +25,7 @@ extern uint8_t UserTxBufferFS[];
 void EC_Init(void)
 {
   STATE = 0x01;
-  user_debug_test_handler(STATE);
+  // user_debug_test_handler(STATE);
 }
 
 void EC_Control(EC_CMD CMD)
