@@ -1,4 +1,5 @@
 #include "platform.h"
+#include "Critical_Section.h"
 #include "main.h"
 #include "can.h"
 #include "arm_math.h"
@@ -25,7 +26,7 @@
 #define INNER_Alpha                   3.0f
 #define ERROR_LIM                     0.25f
 #define PLATFORM_HIGH_BASE            0.22f                         //  unit:m.
-#define PLATFORM_HIGH_MAX             0.6f
+#define PLATFORM_HIGH_MAX             0.59f
 #define PLATFORM_HIGH_MIN             PLATFORM_HIGH_BASE
 #define fAlpha                        0.7f
 
@@ -306,6 +307,14 @@ _Bool PlatForm_High_TargetExecute_ResetFlag(void)
 _Bool PlatForm_High_TargetExecute_GetFlag(void)
 {
   return TargetExecute;
+}
+
+_Bool PlatForm_GetHighLicence(void)
+{
+  Critical_Enter();
+  float tmp = (PlatForm_FK(PV_M.Angle) + PLATFORM_HIGH_BASE);
+  Critical_Exit();
+  return (tmp >= ((PLATFORM_HIGH_MAX + PLATFORM_HIGH_MIN) * 0.5f));
 }
 
 void PlatForm_TIM_PeriodCallback(void)

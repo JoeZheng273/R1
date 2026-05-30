@@ -58,7 +58,6 @@ static void RC_FSM(void)
       }
       else
       {
-        // user_debug_test_handler(0x40);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
@@ -74,7 +73,6 @@ static void RC_FSM(void)
       }
       else
       {
-        // user_debug_test_handler(0x08);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
@@ -129,7 +127,6 @@ static void RC_FSM(void)
               DataIndex = (RxIndex + 1)%4;
               RC_RxCplt_Flag = 1;
               NotTail = 1;
-              // user_debug_test_handler(0xF0);
               RC_STATE = RC_FSM_ABNORMAL;
             }
           }
@@ -166,13 +163,11 @@ static void RC_FSM(void)
         DataIndex = (RxIndex + 1)%4;
         RC_RxCplt_Flag = 1;
         NotTail = 0;
-        // user_debug_test_handler(0x0F);
         RC_STATE = RC_FSM_ABNORMAL;
       }
       break;
     }
     case RC_FSM_ABNORMAL      : {
-      // user_debug_test_handler(0xFF);
       if(ReceiveNum == 10)
       {
         if(NotTail)
@@ -516,12 +511,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-  user_debug_test_handler(0xAA);
+  uint8_t tmp = (uint8_t)(HAL_UART_GetError(huart) | 0xC0);
   if(huart->Instance == UART7)
   {
     __HAL_UART_CLEAR_NEFLAG(&huart7);
     HAL_UART_RxCpltCallback(&huart7);
   }
+  user_debug_test_handler(tmp);
 }
 
 #undef RC_KEY_OP_MASK

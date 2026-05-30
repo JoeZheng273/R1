@@ -35,5 +35,7 @@ _Bool PlatForm_High_TargetExecute_ResetFlag(void);
 
 _Bool PlatForm_High_TargetExecute_GetFlag(void);
 
+_Bool PlatForm_GetHighLicence(void);
+
 #endif
 

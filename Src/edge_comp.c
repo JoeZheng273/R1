@@ -25,7 +25,6 @@ extern uint8_t UserTxBufferFS[];
 void EC_Init(void)
 {
   STATE = 0x01;
-  // user_debug_test_handler(STATE);
 }
 
 void EC_Control(EC_CMD CMD)
@@ -121,7 +120,6 @@ void EC_ProcessedData(void)
               {
                 Critical_Enter();
                 float *tmp_rx = (float *)RxData;
-                user_debug_test_handler(STATE);
                 Chassis_Interface_fops.Updata_PV(tmp_rx,3);
                 Critical_Exit();
               }
@@ -129,13 +127,11 @@ void EC_ProcessedData(void)
           }
           else if(UserRxBufferFS[1] == 0xF0) // 自动模式
           {
-            user_debug_test_handler(STATE);
           }
           else if(UserRxBufferFS[1] == 0x01) // 初始化模式
           {
             EC_Control(EC_CMD_REMOTE);
             STATE = 0x0F;
-            user_debug_test_handler(STATE);
           }
           else
           {  }

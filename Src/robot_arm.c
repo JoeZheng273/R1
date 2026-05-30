@@ -17,6 +17,11 @@
 #undef  CLAMP_FSM_UNINIT
 #undef  CLAMP_FSM_REMOTE
 #undef  CLAMP_FSM_AUTO
+#undef  Cylinder_PIN_In
+#undef  Cylinder_PIN_Out
+
+#define Cylinder_PIN_In               GPIO_PIN_SET
+#define Cylinder_PIN_Out              GPIO_PIN_RESET
 
 #define Clamp_ID        0x111
 #define Arm_ID          0x112
@@ -138,17 +143,22 @@ static void ARM_FSM(void)
         if(RobotArm_Send_CAN_Cmd(Arm_ID,RobotArm_CMD_Push))
         {
           Arm_Cplt_Flag = 0;
+          Cylinder_EN = 1;
+          RobotArm_Arm_Cylinder_In();
           Cylinder_EN = 0;
           ARM_STATE = ARM_FSM_PUSH;
         }
       }
       else
       {
-        if(RobotArm_Send_CAN_Cmd(Arm_ID,RobotArm_CMD_DROP))
+        if(PlatForm_GetHighLicence())
         {
-          Arm_Cplt_Flag = 0;
-          Cylinder_EN = 0;
-          ARM_STATE = ARM_FSM_DROP;
+          if(RobotArm_Send_CAN_Cmd(Arm_ID,RobotArm_CMD_DROP))
+          {
+            Arm_Cplt_Flag = 0;
+            Cylinder_EN = 0;
+            ARM_STATE = ARM_FSM_DROP;
+          }
         }
       }
     }
@@ -240,38 +250,6 @@ void RobotArm_ARM_TriggerFSM(void)
   }
 }
 
-// void RobotArm_Arm_Push(void)
-// {
-//   if(ARM_STATE == ARM_FSM_IN_DWELL)
-//   {
-//     ARM_FSM();
-//   }
-// }
-
-// void RobotArm_Arm_Return(void)
-// {
-//   if(ARM_STATE == ARM_FSM_OUT_DWELL)
-//   {
-//     ARM_FSM();
-//   }
-// }
-
-// void RobotArm_Arm_Drop(void)
-// {
-//   if(ARM_STATE == ARM_FSM_IN_DWELL)
-//   {
-//     ARM_FSM();
-//   }
-// }
-
-// void RobotArm_Arm_Reset(void)
-// {
-//   if(ARM_STATE == ARM_FSM_PLACE)
-//   {
-//     ARM_FSM();
-//   }
-// }
-
 void RobotArm_Arm_Cylinder_Change(void)
 {
   if(Cylinder_EN)
@@ -304,8 +282,8 @@ void RobotArm_Arm_Cylinder_Out(void)
     if(Cylinder_State == 0)
     {
       //  气缸伸长
-      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_SET);
+      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,Cylinder_PIN_Out);
+      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,Cylinder_PIN_Out);
       Cylinder_State = 1;
     }
   }
@@ -318,8 +296,8 @@ void RobotArm_Arm_Cylinder_In(void)
     if(Cylinder_State == 1)
     {
       //  气缸收缩
-      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,Cylinder_PIN_In);
+      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,Cylinder_PIN_In);
       Cylinder_State = 0;
     }
   }
@@ -427,3 +405,5 @@ _Bool RobotArm_Clamp_Processed(uint8_t *pData)
 #undef  CLAMP_FSM_UNINIT
 #undef  CLAMP_FSM_REMOTE
 #undef  CLAMP_FSM_AUTO
+#undef  Cylinder_PIN_In
+#undef  Cylinder_PIN_Out
