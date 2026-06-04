@@ -19,27 +19,33 @@
 #undef  CLAMP_FSM_AUTO
 #undef  Cylinder_PIN_In
 #undef  Cylinder_PIN_Out
+#undef  Cylinder_State_IN
+#undef  Cylinder_State_OUT
+#undef  Cylinder_Init_State
 
-#define Cylinder_PIN_In               GPIO_PIN_SET
-#define Cylinder_PIN_Out              GPIO_PIN_RESET
+//  ---------- 以下禁止修改。 --------------------------
 
-#define Clamp_ID        0x111
-#define Arm_ID          0x112
+/* -------------------- Base Define --------------------- */
+#define Cylinder_State_IN               0
+#define Cylinder_State_OUT              (!Cylinder_State_IN)
 
-#define ARM_FSM_UNINIT            0
-#define ARM_FSM_PUSH              1
-#define ARM_FSM_OUT_DWELL         2
-#define ARM_FSM_RETURN            3
-#define ARM_FSM_IN_DWELL          4
-#define ARM_FSM_DROP              5
-#define ARM_FSM_PLACE             6
-#define ARM_FSM_RESET             7
+#define Clamp_ID                        0x111
+#define Arm_ID                          0x112
 
-#define CLAMP_FSM_UNINIT          0
-#define CLAMP_FSM_REMOTE          1
-#define CLAMP_FSM_AUTO            2
+#define ARM_FSM_UNINIT                  0
+#define ARM_FSM_PUSH                    1
+#define ARM_FSM_OUT_DWELL               2
+#define ARM_FSM_RETURN                  3
+#define ARM_FSM_IN_DWELL                4
+#define ARM_FSM_DROP                    5
+#define ARM_FSM_PLACE                   6
+#define ARM_FSM_RESET                   7
 
-/* -------------------------------------- */
+#define CLAMP_FSM_UNINIT                0
+#define CLAMP_FSM_REMOTE                1
+#define CLAMP_FSM_AUTO                  2
+
+/* -------------------------------------------------------- */
 static const uint8_t RobotArm_CMD_Forward[8] = {
   0x02,0xF0,0xF0,0xF0,0xF0,0xF0,0xF0,0xEE
 };
@@ -50,7 +56,7 @@ static const uint8_t RobotArm_CMD_STOP[8] = {
   0x02,0x55,0x55,0x55,0x55,0x55,0x55,0xEE
 };
 
-/* -------------------------------------- */
+/* -------------------------------------------------------- */
 static const uint8_t RobotArm_CMD_ENABLE[8] = {
   0x01,0x0E,0x0E,0x0E,0x0E,0x0E,0x0E,0xEE
 };
@@ -58,12 +64,12 @@ static const uint8_t RobotArm_CMD_DISABLE[8] = {
   0x01,0xDE,0xDE,0xDE,0xDE,0xDE,0xDE,0xEE
 };
 
-/* -------------------------------------- */
+/* -------------------------------------------------------- */
 static const uint8_t RobotArm_CMD_Ready[8] = {
   0xFF,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xEE
 };
 
-/* -------------------------------------- */
+/* -------------------------------------------------------- */
 static const uint8_t RobotArm_CMD_Push[8] = {
   0x03,0x11,0x11,0x11,0x11,0x11,0x11,0xEE
 };
@@ -77,7 +83,7 @@ static const uint8_t RobotArm_CMD_RESET[8] = {
   0x03,0x18,0x18,0x18,0x18,0x18,0x18,0xEE
 };
 
-/* -------------------------------------- */
+/* -------------------------------------------------------- */
 static const uint8_t RobotArm_CMD_CPLT[8] = {
   0x2A,0xFA,0xFA,0xFA,0xFA,0xFA,0xFA,0xEE
 };
@@ -85,12 +91,19 @@ static const uint8_t RobotArm_CMD_UP[8] = {
   0x2A,0x0D,0x0D,0x0D,0x0D,0x0D,0x0D,0xEE
 };
 
-/* -------------------------------------- */
+//  ---------- 以上禁止修改。 --------------------------
+
+/* -------------------------------------------------------- */
+#define Cylinder_Init_State             Cylinder_State_OUT
+#define Cylinder_PIN_In                 GPIO_PIN_SET
+#define Cylinder_PIN_Out                GPIO_PIN_RESET
+
+/* -------------------------------------------------------- */
 static volatile uint8_t ARM_STATE = ARM_FSM_UNINIT;
 static volatile uint8_t CLAMP_STATE = CLAMP_FSM_UNINIT;
 static volatile _Bool Arm_Cplt_Flag = 0;
 static volatile _Bool Cylinder_EN = 0;
-static volatile _Bool Cylinder_State = 0;
+static volatile _Bool Cylinder_State = Cylinder_Init_State;
 static volatile _Bool Clamp_Disable_Flag = 0;
 static volatile _Bool Clamp_Cplt_Flag = 0;
 static volatile _Bool Arm_Have = 0;
@@ -103,6 +116,8 @@ static void ARM_FSM(void)
       if(RobotArm_Send_CAN_Cmd(Arm_ID,RobotArm_CMD_Ready))
       {
         Arm_Cplt_Flag = 0;
+        Cylinder_EN = 1;
+        RobotArm_Arm_Cylinder_In();
         Cylinder_EN = 0;
         Arm_Have = 0;
         ARM_STATE = ARM_FSM_RESET;
@@ -279,12 +294,12 @@ void RobotArm_Arm_Cylinder_Out(void)
 {
   if(Cylinder_EN)
   {
-    if(Cylinder_State == 0)
+    if(Cylinder_State == Cylinder_State_IN)
     {
       //  气缸伸长
       HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,Cylinder_PIN_Out);
       HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,Cylinder_PIN_Out);
-      Cylinder_State = 1;
+      Cylinder_State = Cylinder_State_OUT;
     }
   }
 }
@@ -293,12 +308,12 @@ void RobotArm_Arm_Cylinder_In(void)
 {
   if(Cylinder_EN)
   {
-    if(Cylinder_State == 1)
+    if(Cylinder_State == Cylinder_State_OUT)
     {
       //  气缸收缩
       HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,Cylinder_PIN_In);
       HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,Cylinder_PIN_In);
-      Cylinder_State = 0;
+      Cylinder_State = Cylinder_State_IN;
     }
   }
 }
@@ -407,3 +422,6 @@ _Bool RobotArm_Clamp_Processed(uint8_t *pData)
 #undef  CLAMP_FSM_AUTO
 #undef  Cylinder_PIN_In
 #undef  Cylinder_PIN_Out
+#undef  Cylinder_State_IN
+#undef  Cylinder_State_OUT
+#undef  Cylinder_Init_State

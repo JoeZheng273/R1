@@ -1,8 +1,6 @@
 #ifndef __PLATFORM_H
 #define __PLATFORM_H
 
-//extern volatile _Bool WorkingFlag;
-
 void PlatForm_Init(void);
 
 void PlatForm_BackToZero_Start(void);

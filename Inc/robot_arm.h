@@ -5,9 +5,6 @@
 
 void RobotArm_Init(void);
 
-// void RobotArm_Arm_Push(void);
-
-// void RobotArm_Arm_Return(void);
 void RobotArm_ARM_TriggerFSM(void);
 
 void RobotArm_Arm_Cylinder_Out(void);

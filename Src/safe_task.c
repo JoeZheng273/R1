@@ -125,9 +125,9 @@ void Safe_task_Back_to_zero(void)
   HAL_TIM_Base_Stop_IT(&htim6);
   PlatForm_BackToZero_Start();
   HAL_TIM_Base_Start_IT(&htim6);
-  while(!(LimFlag[1] && LimFlag[3]))
+  while(!(LimFlag[1] || LimFlag[3]))
   {
-    for(int i=0;(i<20)&&(!(LimFlag[1] && LimFlag[3]));i++)
+    for(int i=0;(i<20)&&(!(LimFlag[1] || LimFlag[3]));i++)
     {
       HAL_Delay(2);
     }
