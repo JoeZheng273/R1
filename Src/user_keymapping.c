@@ -24,11 +24,7 @@ static void KeyMap_KeyOP_Flag_SetPlatUp(void);
 static void KeyMap_KeyOP_Flag_SetPlatDn(void);
 static void KeyMap_KeyOP_Flag_SetClampForword(void);
 static void KeyMap_KeyOP_Flag_SetClampBack(void);
-// static void KeyMap_Clamp_ENABLE(void);
-// static void KeyMap_Clamp_DISABLE(void);
 static void KeyMap_Arm_TriggerFSM(void);
-// static void KeyMap_Arm_Cylinder_Out(void);
-// static void KeyMap_Arm_Cylinder_In(void);
 static void KeyMap_PlatConv_Forward(void);
 static void KeyMap_PlatConv_Back(void);
 static void KeyMap_PlatConv_Stop(void);
@@ -164,16 +160,6 @@ static void KeyMap_KeyOP_Flag_SetClampBack(void)
   KeyOP_Flag |= KEYOP_CLAMP_B;
 }
 
-// static void KeyMap_Clamp_ENABLE(void)
-// {
-//   RobotArm_Clamp_Enable();
-// }
-
-// static void KeyMap_Clamp_DISABLE(void)
-// {
-//   RobotArm_Clamp_Disable();
-// }
-
 static void KeyMap_Clamp_Change(void)
 {
   RobotArm_Clamp_Change();
@@ -183,16 +169,6 @@ static void KeyMap_Arm_TriggerFSM(void)
 {
   RobotArm_ARM_TriggerFSM();
 }
-
-// static void KeyMap_Arm_Cylinder_Out(void)
-// {
-//   RobotArm_Arm_Cylinder_Out();
-// }
-
-// static void KeyMap_Arm_Cylinder_In(void)
-// {
-//   RobotArm_Arm_Cylinder_In();
-// }
 
 static void KeyMap_Arm_Cylinder_Change(void)
 {
