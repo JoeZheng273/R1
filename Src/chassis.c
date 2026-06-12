@@ -73,15 +73,36 @@ static inline float CHASSIS_CLAMP(float x, float min, float max)
   return ((x > max) ? max : ((x < min) ? min : x));
 }
 
+static float CHASSIS_GetMAX(float x1, float x2, float x3, float x4)
+{
+  float tmp1 = ((x1 > x2) ? x1 : x2);
+  float tmp2 = ((x3 > x4) ? x3 : x4);
+  return ((tmp1 > tmp2) ? tmp1 : tmp2);
+}
+
 static void Chassis_IK(float v_end[], float q_dot[])
 {
   if((v_end != NULL) && (q_dot != NULL))
   {
+    float coef = 0.0f;
     float tmp = (-CHASSIS_L * v_end[2]);
-    q_dot[0] = CHASSIS_K1 * (  v_end[0] - v_end[1] + tmp );
-    q_dot[1] = CHASSIS_K1 * (  v_end[0] + v_end[1] + tmp );
-    q_dot[2] = CHASSIS_K1 * ( -v_end[0] + v_end[1] + tmp );
-    q_dot[3] = CHASSIS_K1 * ( -v_end[0] - v_end[1] + tmp );
+    float t_q_dot_0 = CHASSIS_K1 * (  v_end[0] - v_end[1] + tmp );
+    float t_q_dot_1 = CHASSIS_K1 * (  v_end[0] + v_end[1] + tmp );
+    float t_q_dot_2 = CHASSIS_K1 * ( -v_end[0] + v_end[1] + tmp );
+    float t_q_dot_3 = CHASSIS_K1 * ( -v_end[0] - v_end[1] + tmp );
+    float t_absmax = CHASSIS_GetMAX(fabsf(t_q_dot_0), fabsf(t_q_dot_1), fabsf(t_q_dot_2), fabsf(t_q_dot_3));
+    if(t_absmax > __CHASSIS_M3508_RAD_P_S_MAX__)
+    {
+      coef = (__CHASSIS_M3508_RAD_P_S_MAX__ / t_absmax);
+    }
+    else
+    {
+      coef = 1.0f;
+    }
+    q_dot[0] = coef * t_q_dot_0;
+    q_dot[1] = coef * t_q_dot_1;
+    q_dot[2] = coef * t_q_dot_2;
+    q_dot[3] = coef * t_q_dot_3;
   }
 }
 
