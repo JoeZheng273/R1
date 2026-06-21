@@ -13,6 +13,8 @@ void RobotArm_Arm_Cylinder_In(void);
 
 void RobotArm_Arm_Cylinder_Change(void);
 
+void RobotArm_Arm_Force_Cylinder_Change(void);
+
 void RobotArm_Clamp_Change(void);
 
 void RobotArm_Clamp_Disable(void);

@@ -1,4 +1,5 @@
 #include "robot_arm.h"
+#include "Critical_Section.h"
 #include "platform.h"
 #include "stddef.h"
 #include "gpio.h"
@@ -277,6 +278,16 @@ void RobotArm_Arm_Cylinder_Change(void)
       RobotArm_Arm_Cylinder_Out();
     }
   }
+}
+
+void RobotArm_Arm_Force_Cylinder_Change(void)
+{
+  Critical_Enter();
+  _Bool tmp = Cylinder_EN;
+  Cylinder_EN = 1;
+  RobotArm_Arm_Cylinder_Change();
+  Cylinder_EN = tmp;
+  Critical_Exit();
 }
 
 void RobotArm_Clamp_Change(void)

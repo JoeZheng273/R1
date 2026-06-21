@@ -28,12 +28,13 @@ static void KeyMap_Arm_TriggerFSM(void);
 static void KeyMap_PlatConv_Forward(void);
 static void KeyMap_PlatConv_Back(void);
 static void KeyMap_PlatConv_Stop(void);
-static void KeyMap_EC_ChangeState(void);
+// static void KeyMap_EC_ChangeState(void);
 static void KeyMap_Chassis_SetMode_0(void);
 static void KeyMap_Chassis_SetMode_1(void);
 static void KeyMap_Chassis_SetMode_2(void);
 static void KeyMap_Chassis_SetMode_3(void);
 static void KeyMap_Arm_Cylinder_Change(void);
+static void KeyMap_Arm_Force_Cylinder_Change(void);
 static void KeyMap_Clamp_Change(void);
 
 #if (USER == USER_alpha)
@@ -58,7 +59,7 @@ const KeyMapping_ItfTypeDef KeyMap_Interface_fops = {
   .KeyOP_Lf_N  = NULL                               ,
   .KeyOP_Dn_N  = NULL                               ,
   .KeyOP_Rt_N  = NULL                               ,
-  .KeyOP_Super = KeyMap_EC_ChangeState              ,
+  .KeyOP_Super = KeyMap_Arm_Force_Cylinder_Change   ,
 };
 #elif (USER == USER_1)
 const KeyMapping_ItfTypeDef KeyMap_Interface_fops = {
@@ -175,9 +176,14 @@ static void KeyMap_Arm_Cylinder_Change(void)
   RobotArm_Arm_Cylinder_Change();
 }
 
-static void KeyMap_EC_ChangeState(void)
+// static void KeyMap_EC_ChangeState(void)
+// {
+//   EC_ChangeState();
+// }
+
+static void KeyMap_Arm_Force_Cylinder_Change(void)
 {
-  EC_ChangeState();
+  RobotArm_Arm_Force_Cylinder_Change();
 }
 
 static void KeyMap_Chassis_SetMode_0(void)
