@@ -1,4 +1,5 @@
 #include "chassis.h"
+#include "Critical_Section.h"
 #include "main.h"
 #include "can.h"
 #include "debug_assistant.h"
@@ -52,6 +53,7 @@ static float Output_O[3] = {0};
 static float q_dot_sp[4] = {0};
 static float q_dot_pv[4] = {0};
 static int   Inner_CO[4] = {0};
+static volatile float Chassis_Gain = 1.0f;
 
 static volatile uint8_t Chassis_direction_mode = 0;
 
@@ -167,9 +169,9 @@ static void Chassis_Set_SP_v_end(float v_x, float v_y, float omega_z)
 {
   if(__ARM_isfinitef(v_x)&&__ARM_isfinitef(v_y)&&__ARM_isfinitef(omega_z))
   {
-    v_end_sp[0] = CHASSIS_CLAMP(v_x,CHASSIS_V_X_MIN,CHASSIS_V_X_MAX);
-    v_end_sp[1] = CHASSIS_CLAMP(v_y,CHASSIS_V_Y_MIN,CHASSIS_V_Y_MAX);
-    v_end_sp[2] = CHASSIS_CLAMP(omega_z,CHASSIS_OMEGA_Z_MIN,CHASSIS_OMEGA_Z_MAX);
+    v_end_sp[0] = Chassis_Gain * CHASSIS_CLAMP(v_x,CHASSIS_V_X_MIN,CHASSIS_V_X_MAX);
+    v_end_sp[1] = Chassis_Gain * CHASSIS_CLAMP(v_y,CHASSIS_V_Y_MIN,CHASSIS_V_Y_MAX);
+    v_end_sp[2] = Chassis_Gain * CHASSIS_CLAMP(omega_z,CHASSIS_OMEGA_Z_MIN,CHASSIS_OMEGA_Z_MAX);
   }
 }
 
@@ -205,6 +207,16 @@ static void Chassis_Updata_PV(float *pPV, unsigned char Size)
       case 4 : Chassis_Update_PV_q_dot(pPV[0],pPV[1],pPV[2],pPV[3]); break;
       default : break;
     }
+  }
+}
+
+void Chassis_SetGain(float Gain)
+{
+  if(__ARM_isfinitef(Gain))
+  {
+    Critical_Enter();
+    Chassis_Gain = Gain;
+    Critical_Exit();
   }
 }
 

@@ -29,6 +29,8 @@ static void KeyMap_PlatConv_Forward(void);
 static void KeyMap_PlatConv_Back(void);
 static void KeyMap_PlatConv_Stop(void);
 // static void KeyMap_EC_ChangeState(void);
+static void KeyMap_Chassis_SetGain_0(void);
+static void KeyMap_Chassis_SetGain_1(void);
 static void KeyMap_Chassis_SetMode_0(void);
 static void KeyMap_Chassis_SetMode_1(void);
 static void KeyMap_Chassis_SetMode_2(void);
@@ -47,9 +49,9 @@ const KeyMapping_ItfTypeDef KeyMap_Interface_fops = {
   .KeyOP_ALf_T = KeyMap_Chassis_SetMode_1           ,
   .KeyOP_ADn_T = KeyMap_Chassis_SetMode_2           ,
   .KeyOP_ARt_T = KeyMap_Chassis_SetMode_3           ,
-  .KeyOP_BUp_T = NULL                               ,
+  .KeyOP_BUp_T = KeyMap_Chassis_SetGain_0           ,
   .KeyOP_BLf_T = KeyMap_Arm_Cylinder_Change         ,
-  .KeyOP_BDn_T = NULL                               ,
+  .KeyOP_BDn_T = KeyMap_Chassis_SetGain_1           ,
   .KeyOP_BRt_T = KeyMap_Arm_TriggerFSM              ,
   .KeyOP_CUp_T = KeyMap_Clamp_Change                ,
   .KeyOP_CLf_T = KeyMap_PlatConv_Back               ,
@@ -184,6 +186,16 @@ static void KeyMap_Arm_Cylinder_Change(void)
 static void KeyMap_Arm_Force_Cylinder_Change(void)
 {
   RobotArm_Arm_Force_Cylinder_Change();
+}
+
+static void KeyMap_Chassis_SetGain_0(void)
+{
+  Chassis_SetGain(1.0f);
+}
+
+static void KeyMap_Chassis_SetGain_1(void)
+{
+  Chassis_SetGain(0.05f);
 }
 
 static void KeyMap_Chassis_SetMode_0(void)

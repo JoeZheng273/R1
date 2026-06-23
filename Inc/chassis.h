@@ -9,6 +9,8 @@ uint8_t Chassis_GetDirMode(void);
 
 void Chassis_SetDirMode(uint8_t Mode_Num);
 
+void Chassis_SetGain(float Gain);
+
 void Chassis_TIM_PeriodCallback(void);
 
 #endif
