@@ -52,7 +52,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
   Drivers/BSP/Src/can_receive.c
   Drivers/BSP/Src/debug_assistant.c
   Src/chassis.c
-  Src/edge_comp.c
   Src/platform.c
   Src/remote_ctrl.c
   Src/robot_arm.c

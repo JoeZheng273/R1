@@ -20,11 +20,8 @@
 #include "main.h"
 #include "can.h"
 #include "crc.h"
-#include "stm32f427xx.h"
-#include "stm32f4xx_hal_gpio.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -33,9 +30,7 @@
 #include "bsp_led.h"
 #include "XHU_RRC_LIB.h"
 #include "chassis.h"
-#include "edge_comp.h"
 #include "remote_ctrl.h"
-#include "usbd_cdc_if.h"
 #include "platform.h"
 #include "safe_task.h"
 #include "can_receive.h"
@@ -100,7 +95,6 @@ void Robot_Init(void)
   Safe_task_Update_LimFlag();
   /* --------- Module Init --------- */
   Chassis_Init();
-  EC_Init();
   RC_Init();
   RobotArm_Init();
   PlatForm_Init();
@@ -137,9 +131,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  #if USE_EC
-  USB_CDC_ForceReEnum();
-  #endif
+  
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -148,7 +140,6 @@ int main(void)
   MX_CAN2_Init();
   MX_UART7_Init();
   MX_CRC_Init();
-  MX_USB_DEVICE_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_USART6_UART_Init();
@@ -161,12 +152,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-#if USE_EC
-    if(EC_GetRxCpltFlag())
-    {
-      EC_ProcessedData();
-    }
-#endif
     if(RC_GetRxCpltFlag())
     {
       RC_ProcessedData();

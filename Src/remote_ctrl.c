@@ -5,7 +5,6 @@
 #include "debug_assistant.h"
 #include "Critical_Section.h"
 #include "user_keymapping.h"
-#include "edge_comp.h"
 #include "gpio.h"
 #include <stdint.h>
 #include "chassis.h"
@@ -19,6 +18,7 @@
 #undef RC_FSM_CRCRECEIVE
 #undef RC_FSM_TAIL
 #undef RC_FSM_ABNORMAL
+#undef RC_Alpha
 
 #define RC_KEY_OP_MASK                0xF0
 #define RC_KEY_SUPER                  0x04
@@ -30,6 +30,8 @@
 #define RC_FSM_CRCRECEIVE             4
 #define RC_FSM_TAIL                   5
 #define RC_FSM_ABNORMAL               6
+
+#define RC_Alpha                      0.6f
 
 static uint8_t RC_RxData = 0;  //数据接收缓冲区
 static volatile uint8_t RC_STATE = RC_FSM_UNINIT; //状态
@@ -202,6 +204,17 @@ static void RC_FSM(void)
   }
 }
 
+static void RC_SmoothFilter(float Input, float FilterAlpha, float *pLast_Output, float *pOutput)
+{
+  float tmp = ((Input * FilterAlpha) + (*pLast_Output * (1.0f - FilterAlpha)));
+  if((tmp < 1.0E-4f) && (tmp > -1.0E-4f))
+  {
+    tmp = 0.0f;
+  }
+  *pOutput = tmp;
+  *pLast_Output = *pOutput;
+}
+
 /* ----------------------------------------------- */
 void RC_TurnOn(void)
 {
@@ -232,6 +245,9 @@ void RC_Init(void)
 void RC_ProcessedData(void)
 {
   static uint8_t last_val = 0;
+  static float sp_x_last = 0.0f;
+  static float sp_y_last = 0.0f;
+  static float sp_z_last = 0.0f;
   uint8_t tIndex = (DataIndex + 3)%4;
   int8_t tmp_x = (int8_t)RC_RxBuffer[tIndex][0];
   int8_t tmp_y = (int8_t)RC_RxBuffer[tIndex][1];
@@ -250,30 +266,29 @@ void RC_ProcessedData(void)
     last_val = tmp_val;
   }
   RC_KeyUpdate_Flag = 1;
-  #if USE_EC
-  if(EC_GetState() == 0x0F)
+  float x = 0.01f * ((float)tmp_x * (float)__CHASSIS_X_VELOCITY_ABS_MAX__) * 0.9f;
+  float y = 0.01f * ((float)tmp_y * (float)__CHASSIS_Y_VELOCITY_ABS_MAX__) * 0.9f;
+  float z = 0.01f * ((float)tmp_z * (float)__CHASSIS_Z_PALSTANCE_ABS_MAX__) * 0.9f;
+  float sp_x = 0.0f;
+  float sp_y = 0.0f;
+  float sp_z = 0.0f;
+  RC_SmoothFilter(x,RC_Alpha,&sp_x_last,&sp_x);
+  RC_SmoothFilter(y,RC_Alpha,&sp_y_last,&sp_y);
+  RC_SmoothFilter(z,RC_Alpha,&sp_z_last,&sp_z);
+  Critical_Enter();
+  switch (Chassis_GetDirMode())
   {
-  #endif
-    float x = 0.01f * ((float)tmp_x * (float)__CHASSIS_X_VELOCITY_ABS_MAX__) * 0.9f;
-    float y = 0.01f * ((float)tmp_y * (float)__CHASSIS_Y_VELOCITY_ABS_MAX__) * 0.9f;
-    float z = 0.01f * ((float)tmp_z * (float)__CHASSIS_Z_PALSTANCE_ABS_MAX__) * 0.9f;
-    Critical_Enter();
-    switch (Chassis_GetDirMode())
-    {
-      case 0: Chassis_Interface_fops.Set_SP(x,y,z);
-      break;
-      case 1: Chassis_Interface_fops.Set_SP(-y,x,z);
-      break;
-      case 2: Chassis_Interface_fops.Set_SP(-x,-y,z);
-      break;
-      case 3: Chassis_Interface_fops.Set_SP(y,-x,z);
-      break;
-      default: break;
-    }
-    Critical_Exit();
-  #if USE_EC
+    case 0: Chassis_Interface_fops.Set_SP(sp_x,sp_y,sp_z);
+    break;
+    case 1: Chassis_Interface_fops.Set_SP(-sp_y,sp_x,sp_z);
+    break;
+    case 2: Chassis_Interface_fops.Set_SP(-sp_x,-sp_y,sp_z);
+    break;
+    case 3: Chassis_Interface_fops.Set_SP(sp_y,-sp_x,sp_z);
+    break;
+    default: break;
   }
-  #endif
+  Critical_Exit();
 }
 
 void RC_KeyProcessed(void)
@@ -529,3 +544,4 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 #undef RC_FSM_CRCRECEIVE
 #undef RC_FSM_TAIL
 #undef RC_FSM_ABNORMAL
+#undef RC_Alpha

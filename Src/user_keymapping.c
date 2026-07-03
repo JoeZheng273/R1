@@ -3,7 +3,6 @@
 #include "safe_task.h"
 #include "platform.h"
 #include "robot_arm.h"
-#include "edge_comp.h"
 #include "chassis.h"
 #include "debug_assistant.h"
 #include "module_Interface_fops_set.h"
