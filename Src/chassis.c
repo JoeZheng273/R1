@@ -53,6 +53,7 @@ static float Output_O[3] = {0};
 static float q_dot_sp[4] = {0};
 static float q_dot_pv[4] = {0};
 static int   Inner_CO[4] = {0};
+static float fAlpha = 0.7f;
 static volatile float Chassis_Gain = 1.0f;
 
 static volatile uint8_t Chassis_direction_mode = 0;
@@ -108,6 +109,43 @@ static void Chassis_IK(float v_end[], float q_dot[])
   }
 }
 
+static float Chassis_Forward(const float Target, const PID_Inst_t* const This)
+{
+  static float SP_last_0 = 0;
+  static float SP_last_1 = 0;
+  static float SP_last_2 = 0;
+  static float SP_last_3 = 0;
+  float tmp = 0.0f;
+  if(This == PID_I[0])
+  {
+    tmp = 500.0f * (Target - SP_last_0) + 60.0f * 
+    ((Target > 0.0f)? 1.0f :((Target < -0.0f)? -1.0f : 0.0f));
+    SP_last_0 = (fAlpha * Target) + ((1-fAlpha) * SP_last_0);
+  }
+  else if(This == PID_I[1])
+  {
+    tmp = 500.0f * (Target - SP_last_1) + 60.0f * 
+    ((Target > 0.0f)? 1.0f :((Target < -0.0f)? -1.0f : 0.0f));
+    SP_last_1 = (fAlpha * Target) + ((1-fAlpha) * SP_last_1);
+  }
+  else if(This == PID_I[2])
+  {
+    tmp = 500.0f * (Target - SP_last_2) + 60.0f * 
+    ((Target > 0.0f)? 1.0f :((Target < -0.0f)? -1.0f : 0.0f));
+    SP_last_2 = (fAlpha * Target) + ((1-fAlpha) * SP_last_2);
+  }
+  else if(This == PID_I[3])
+  {
+    tmp = 500.0f * (Target - SP_last_3) + 60.0f * 
+    ((Target > 0.0f)? 1.0f :((Target < -0.0f)? -1.0f : 0.0f));
+    SP_last_3 = (fAlpha * Target) + ((1-fAlpha) * SP_last_3);
+  }
+  else {
+  
+  }
+  return tmp;
+}
+
 static inline void Chassis_Run_PID_Outer(void)
 {
   #if CHASSIS_USE_OUTER
@@ -153,6 +191,7 @@ static void Chassis_Set_PID_Param(void)
   #endif
   Param_I.Alpha = 0.8;
   Param_I.Kp = 1150;
+  Param_I.Kf = 0.8;
   Param_I.Ki = 20;
   Param_I.Kd = 300;
   Param_I.Outputmax = 16384;
@@ -162,7 +201,11 @@ static void Chassis_Set_PID_Param(void)
   for(int i=0;i<4;i++)
   {
     PID_SetBasicParam(PID_I[i],&Param_I);
+    PID_SetParam_Forward(PID_I[i],Chassis_Forward);
   }
+  Param_I.Kf = 1.2;
+  PID_SetBasicParam(PID_I[0],&Param_I);
+  PID_SetParam_Forward(PID_I[0],Chassis_Forward);
 }
 
 static void Chassis_Set_SP_v_end(float v_x, float v_y, float omega_z)
