@@ -96,9 +96,9 @@ static inline void PlatForm_Set_PID_Param(void)
   PID_Basic_Param_t Param_O = {0};
   /* -------------------------- */
   Param_O.Alpha = 0.8;
-  Param_O.Kp = 10;
+  Param_O.Kp = 80;
   Param_O.Ki = 0;
-  Param_O.Kd = 5;
+  Param_O.Kd = 8;
   Param_O.Kf = 0;
   Param_O.Outputmax = 35;
   Param_O.Summax = 0;
@@ -269,12 +269,12 @@ void PlatForm_High_Stop(void)
 
 void PlatForm_Conveyor_Forward(void)
 {
-  SP_c = 10;
+  SP_c = 6;
 }
 
 void PlatForm_Conveyor_Back(void)
 {
-  SP_c = -10;
+  SP_c = -6;
 }
 
 void PlatForm_Conveyor_Stop(void)
