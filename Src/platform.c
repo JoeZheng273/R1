@@ -7,6 +7,7 @@
 #include "XHU_RRC_LIB.h"
 #include "can_receive.h"
 #include "safe_task.h"
+#include "robot_arm.h"
 
 #undef  OUTLOOP_PERIOD
 #undef  HIGH_NUM
@@ -54,6 +55,7 @@ static volatile float dH = 0;
 static volatile float High = 0;
 static volatile float HighAngle = 0;
 static volatile _Bool TargetExecute = 0;
+static volatile _Bool HighLicence = 0;
 
 static inline float PLATFORM_CLAMP(float min, float x, float max)
 {
@@ -167,6 +169,14 @@ static float AngleUpdate(float NowAngle, float TargetAngle)
   }
 }
 
+static _Bool PlatForm_CheckHighLicence(void)
+{
+  Critical_Enter();
+  float tmp = (PlatForm_FK(PV_M.Angle) + PLATFORM_HIGH_BASE);
+  Critical_Exit();
+  return (tmp >= ((PLATFORM_HIGH_MAX + PLATFORM_HIGH_MIN) * 0.55f));
+}
+
 /* -------------------------------------------------- */
 void PlatForm_Init(void)
 {
@@ -253,6 +263,10 @@ void PlatForm_High_Sub(void)
   dH = High - PLATFORM_HIGH_BASE;
   HighAngle = PlatForm_IK(dH);
   Critical_Exit();
+  if((!PlatForm_GetHighLicence()) && (ArmStatus_is_Place()))
+  {
+    RobotArm_ARM_TriggerFSM();
+  }
 }
 
 void PlatForm_High_Stop(void)
@@ -311,12 +325,14 @@ _Bool PlatForm_High_TargetExecute_GetFlag(void)
   return TargetExecute;
 }
 
+void PlatForm_UpdateHighLicence(void)
+{
+  HighLicence = PlatForm_CheckHighLicence();
+}
+
 _Bool PlatForm_GetHighLicence(void)
 {
-  Critical_Enter();
-  float tmp = (PlatForm_FK(PV_M.Angle) + PLATFORM_HIGH_BASE);
-  Critical_Exit();
-  return (tmp >= ((PLATFORM_HIGH_MAX + PLATFORM_HIGH_MIN) * 0.5f));
+  return HighLicence;
 }
 
 void PlatForm_TIM_PeriodCallback(void)

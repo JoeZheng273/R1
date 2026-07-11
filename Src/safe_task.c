@@ -87,6 +87,11 @@ void Safe_task_Update_LimFlag(void)
   }
 }
 
+void Safe_task_Update_HighLicence(void)
+{
+  PlatForm_UpdateHighLicence();
+}
+
 _Bool Safe_task_Get_LimFlag(uint16_t Key_ID)
 {
   if(Key_ID < SAFE_TASK_LIM_KEY_NUM)
@@ -117,6 +122,7 @@ void Safe_task_TIM_PeriodCallback(void)
 {
   Safe_task_Update_LimFlag();
   Safe_task_AutoTaskUpdate();
+  Safe_task_Update_HighLicence();
 }
 
 void Safe_task_Back_to_zero(void)

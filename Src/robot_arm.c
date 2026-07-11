@@ -215,6 +215,11 @@ static void ARM_FSM(void)
   }
 }
 
+_Bool ArmStatus_is_Place(void)
+{
+  return (ARM_STATE == ARM_FSM_PLACE);
+}
+
 static void CLAMP_FSM(void)
 {
   switch(CLAMP_STATE)

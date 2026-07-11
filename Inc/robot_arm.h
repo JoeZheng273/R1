@@ -31,4 +31,6 @@ _Bool RobotArm_Arm_Processed(uint8_t *pData);
 
 _Bool RobotArm_Clamp_Processed(uint8_t *pData);
 
+_Bool ArmStatus_is_Place(void);
+
 #endif
