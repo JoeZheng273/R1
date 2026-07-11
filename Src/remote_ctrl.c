@@ -19,6 +19,7 @@
 #undef RC_FSM_TAIL
 #undef RC_FSM_ABNORMAL
 #undef RC_Alpha
+#undef RC_Delta_Max
 
 #define RC_KEY_OP_MASK                0xF0
 #define RC_KEY_SUPER                  0x04
@@ -31,7 +32,8 @@
 #define RC_FSM_TAIL                   5
 #define RC_FSM_ABNORMAL               6
 
-#define RC_Alpha                      0.6f
+#define RC_Alpha                      0.4f
+#define RC_Delta_Max                  0.5f
 
 static uint8_t RC_RxData = 0;  //数据接收缓冲区
 static volatile uint8_t RC_STATE = RC_FSM_UNINIT; //状态
@@ -210,6 +212,19 @@ static void RC_SmoothFilter(float Input, float FilterAlpha, float *pLast_Output,
   if((tmp < 1.0E-4f) && (tmp > -1.0E-4f))
   {
     tmp = 0.0f;
+  }
+  if(((*pLast_Output - tmp) > RC_Delta_Max) || ((*pLast_Output - tmp) < -RC_Delta_Max))
+  {
+    if(*pLast_Output > tmp)
+    {
+      tmp = *pLast_Output - RC_Delta_Max;
+    }
+    else if (*pLast_Output < tmp) {
+      tmp = *pLast_Output + RC_Delta_Max;
+    }
+    else {
+    
+    }
   }
   *pOutput = tmp;
   *pLast_Output = *pOutput;
@@ -545,3 +560,4 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 #undef RC_FSM_TAIL
 #undef RC_FSM_ABNORMAL
 #undef RC_Alpha
+#undef RC_Delta_Max

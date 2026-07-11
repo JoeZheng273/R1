@@ -30,7 +30,7 @@
 #define PLATFORM_HIGH_MAX             0.59f
 #define PLATFORM_HIGH_MIN             PLATFORM_HIGH_BASE
 #define fAlpha                        0.7f
-#define Conveyor_Alpha                0.5f
+#define Conveyor_Alpha                0.1f
 
 static const float HighForm[HIGH_NUM] = {0.2f,0.4f,0.6f,0.6f,0.6f};
 
@@ -233,7 +233,7 @@ void PlatForm_High_Add(void)
   }
   Critical_Enter();
   float tmp = High;
-  tmp += HIGH_delta * 2;
+  tmp += HIGH_delta * 4;
   High = PLATFORM_CLAMP(PLATFORM_HIGH_MIN,tmp,PLATFORM_HIGH_MAX);
   dH = High - PLATFORM_HIGH_BASE;
   HighAngle = PlatForm_IK(dH);
@@ -248,7 +248,7 @@ void PlatForm_High_Sub(void)
   }
   Critical_Enter();
   float tmp = High;
-  tmp -= HIGH_delta * 2;
+  tmp -= HIGH_delta * 4;
   High = PLATFORM_CLAMP(PLATFORM_HIGH_MIN,tmp,PLATFORM_HIGH_MAX);
   dH = High - PLATFORM_HIGH_BASE;
   HighAngle = PlatForm_IK(dH);
@@ -269,12 +269,12 @@ void PlatForm_High_Stop(void)
 
 void PlatForm_Conveyor_Forward(void)
 {
-  SP_c = 6;
+  SP_c = 12;
 }
 
 void PlatForm_Conveyor_Back(void)
 {
-  SP_c = -6;
+  SP_c = -12;
 }
 
 void PlatForm_Conveyor_Stop(void)
