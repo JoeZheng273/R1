@@ -19,10 +19,6 @@ void PlatForm_High_Sub(void);
 
 void PlatForm_High_Stop(void);
 
-void PlatForm_High_Up(void);
-
-void PlatForm_High_Down(void);
-
 void PlatForm_TIM_PeriodCallback(void);
 
 void PlatForm_High_Add_delta(void);

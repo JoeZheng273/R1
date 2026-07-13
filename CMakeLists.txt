@@ -44,10 +44,10 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Src/Critical_Section.c
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Src/DJI_Motor.c
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Src/HEAP.c
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Src/PID.c
+  Middlewares/Third_Party/XHU_RRC_LIB/Src/Critical_Section.c
+  Middlewares/Third_Party/XHU_RRC_LIB/Src/DJI_Motor.c
+  Middlewares/Third_Party/XHU_RRC_LIB/Src/HEAP.c
+  Middlewares/Third_Party/XHU_RRC_LIB/Src/PID.c
   Drivers/BSP/Src/bsp_led.c
   Drivers/BSP/Src/can_receive.c
   Drivers/BSP/Src/debug_assistant.c
@@ -62,8 +62,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Conf
-  Middlewares/Third_Party/XHU_RRC_LIB_V1_4_mini/Inc
+  Middlewares/Third_Party/XHU_RRC_LIB/Conf
+  Middlewares/Third_Party/XHU_RRC_LIB/Inc
   Inc
   Drivers/BSP/Inc
     # Add user defined include paths

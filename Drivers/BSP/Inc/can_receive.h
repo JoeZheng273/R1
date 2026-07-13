@@ -2,13 +2,18 @@
 #define __CAN_RECEIVE_H
 
 #include "stdint.h"
+#include "can.h"
 
-void can_filter_init(void);
+void can_filter_init(CAN_HandleTypeDef *hcan);
 
 uint32_t Chassis_Send_CAN_Cmd(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 
 uint32_t Plat_Send_CAN_Cmd(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 
 uint32_t RobotArm_Send_CAN_Cmd(uint32_t CAN_ID, const uint8_t *pData);
+
+_Bool CAN_Receive_Error_GetFlag(void);
+
+void CAN_Receive_ErrorProcessed(void);
 
 #endif

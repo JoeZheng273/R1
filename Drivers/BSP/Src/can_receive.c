@@ -1,33 +1,51 @@
 #include "can_receive.h"
 #include "XHU_RRC_LIB.h"
 #include "can.h"
+#include "debug_assistant.h"
 #include "robot_arm.h"
+#include "stm32f427xx.h"
+#include "stm32f4xx_hal_can.h"
+#include "stm32f4xx_hal_rcc_ex.h"
+#include <stdint.h>
+#include <stdio.h>
 
-void can_filter_init(void)
+static volatile _Bool CAN1_Reset_Flag = 0;
+static volatile _Bool CAN2_Reset_Flag = 0;
+
+void can_filter_init(CAN_HandleTypeDef *hcan)
 {
-  CAN_FilterTypeDef can_filter_st = {0};
-  can_filter_st.FilterActivation = ENABLE;
-  can_filter_st.FilterMode = CAN_FILTERMODE_IDMASK;
-  can_filter_st.FilterScale = CAN_FILTERSCALE_32BIT;
-  can_filter_st.FilterIdHigh = 0x0000;
-  can_filter_st.FilterIdLow = 0x0000;
-  can_filter_st.FilterMaskIdHigh = 0x0000;
-  can_filter_st.FilterMaskIdLow = 0x0000;
-  can_filter_st.FilterBank = 0;
-  can_filter_st.SlaveStartFilterBank = 14;
-  can_filter_st.FilterFIFOAssignment = CAN_RX_FIFO0;
-  HAL_CAN_ConfigFilter(&hcan1, &can_filter_st);
-  HAL_CAN_Start(&hcan1);
-  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-  can_filter_st.FilterFIFOAssignment = CAN_RX_FIFO1;
-  can_filter_st.FilterBank = 14;
-  can_filter_st.FilterIdHigh = 0x0000;
-  can_filter_st.FilterIdLow = 0x0000;
-  can_filter_st.FilterMaskIdHigh = 0x0200;
-  can_filter_st.FilterMaskIdLow =  0x0200;
-  HAL_CAN_ConfigFilter(&hcan2, &can_filter_st);
-  HAL_CAN_Start(&hcan2);
-  HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO1_MSG_PENDING);
+  if(hcan != NULL)
+  {
+    CAN_FilterTypeDef can_filter_st = {0};
+    can_filter_st.FilterActivation = ENABLE;
+    can_filter_st.FilterMode = CAN_FILTERMODE_IDMASK;
+    can_filter_st.FilterScale = CAN_FILTERSCALE_32BIT;
+    can_filter_st.FilterIdHigh = 0x0000;
+    can_filter_st.FilterIdLow = 0x0000;
+    can_filter_st.FilterMaskIdHigh = 0x0000;
+    can_filter_st.FilterMaskIdLow = 0x0000;
+    can_filter_st.FilterBank = 0;
+    can_filter_st.SlaveStartFilterBank = 14;
+    can_filter_st.FilterFIFOAssignment = CAN_RX_FIFO0;
+    if(hcan->Instance == CAN1)
+    {
+      HAL_CAN_ConfigFilter(&hcan1, &can_filter_st);
+      HAL_CAN_Start(&hcan1);
+      HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+    }
+    if(hcan->Instance == CAN2)
+    {
+      can_filter_st.FilterFIFOAssignment = CAN_RX_FIFO1;
+      can_filter_st.FilterBank = 14;
+      can_filter_st.FilterIdHigh = 0x0000;
+      can_filter_st.FilterIdLow = 0x0000;
+      can_filter_st.FilterMaskIdHigh = 0x0200;
+      can_filter_st.FilterMaskIdLow =  0x0200;
+      HAL_CAN_ConfigFilter(&hcan2, &can_filter_st);
+      HAL_CAN_Start(&hcan2);
+      HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO1_MSG_PENDING);
+    }
+  }
 }
 
 uint32_t Chassis_Send_CAN_Cmd(int16_t motor1, int16_t motor2, 
@@ -116,5 +134,56 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
     {
       RobotArm_Arm_Processed(rx_data);
     }
+  }
+}
+
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *hcan)
+{
+  if(hcan->Instance == CAN1)
+  {
+    if(__HAL_CAN_GET_FLAG(hcan, CAN_FLAG_BOF))
+    {
+      CAN1_Reset_Flag = 1;
+      user_debug_test_handler(0x8C);
+    }
+    if(__HAL_CAN_GET_FLAG(hcan, CAN_FLAG_EPV))
+    {
+      user_debug_test_handler(0x88);
+    }
+  }
+  if(hcan->Instance == CAN2)
+  {
+    if(__HAL_CAN_GET_FLAG(hcan, CAN_FLAG_BOF))
+    {
+      CAN2_Reset_Flag = 1;
+      user_debug_test_handler(0xCC);
+    }
+    if(__HAL_CAN_GET_FLAG(hcan, CAN_FLAG_EPV))
+    {
+      user_debug_test_handler(0xC8);
+    }
+  }
+}
+
+_Bool CAN_Receive_Error_GetFlag(void)
+{
+  return (CAN1_Reset_Flag || CAN2_Reset_Flag);
+}
+
+void CAN_Receive_ErrorProcessed(void)
+{
+  if(CAN1_Reset_Flag)
+  {
+    CAN1_Reset_Flag = 0;
+    HAL_CAN_DeInit(&hcan1);
+    MX_CAN1_Init();
+    can_filter_init(&hcan1);
+  }
+  if(CAN2_Reset_Flag)
+  {
+    CAN2_Reset_Flag = 0;
+    HAL_CAN_DeInit(&hcan2);
+    MX_CAN2_Init();
+    can_filter_init(&hcan2);
   }
 }

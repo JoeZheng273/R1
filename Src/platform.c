@@ -33,7 +33,7 @@
 #define fAlpha                        0.7f
 #define Conveyor_Alpha                0.1f
 
-static const float HighForm[HIGH_NUM] = {0.2f,0.4f,0.6f,0.6f,0.6f};
+static const float HighLimit = ((PLATFORM_HIGH_MAX + PLATFORM_HIGH_MIN) * 0.55f);
 
 static PID_t PID_M[2] = {NULL};
 static PID_t PID_S[2] = {NULL};
@@ -50,7 +50,6 @@ static PV_t PV_c = {0};
 static int CO_M = 0;
 static int CO_S = 0;
 static int CO_c = 0;
-static volatile uint8_t HighCounter = 0;
 static volatile float dH = 0;
 static volatile float High = 0;
 static volatile float HighAngle = 0;
@@ -174,7 +173,7 @@ static _Bool PlatForm_CheckHighLicence(void)
   Critical_Enter();
   float tmp = (PlatForm_FK(PV_M.Angle) + PLATFORM_HIGH_BASE);
   Critical_Exit();
-  return (tmp >= ((PLATFORM_HIGH_MAX + PLATFORM_HIGH_MIN) * 0.55f));
+  return (tmp >= HighLimit);
 }
 
 /* -------------------------------------------------- */
@@ -207,32 +206,6 @@ void PlatForm_BackToZero_End(void)
   djiMotor_Back2Zero(M3508_S);
   HighAngle = 0;
   SP_M[0] = 0;
-}
-
-void PlatForm_High_Up(void)
-{
-  Critical_Enter();
-  if(HighCounter < (HIGH_NUM - 1))
-  {
-    HighCounter++;
-  }
-  High = HighForm[HighCounter];
-  dH = High - PLATFORM_HIGH_BASE;
-  HighAngle = PlatForm_IK(dH);
-  Critical_Exit();
-}
-
-void PlatForm_High_Down(void)
-{
-  Critical_Enter();
-  if(HighCounter)
-  {
-    HighCounter--;
-  }
-  High = HighForm[HighCounter];
-  dH = High - PLATFORM_HIGH_BASE;
-  HighAngle = PlatForm_IK(dH);
-  Critical_Exit();
 }
 
 void PlatForm_High_Add(void)

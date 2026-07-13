@@ -88,7 +88,8 @@ void Robot_Init(void)
   HAL_Delay(10);
   RC_TurnOn();
   HAL_Delay(10);
-  can_filter_init();
+  can_filter_init(&hcan1);
+  can_filter_init(&hcan2);
   bsp_LED_GREEN_ON();
   /* -------- SafeTask Start ------- */
   HAL_TIM_Base_Start_IT(&htim7);
@@ -164,6 +165,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    if(CAN_Receive_Error_GetFlag())
+    {
+      CAN_Receive_ErrorProcessed();
+    }
   }
   /* USER CODE END 3 */
 }
