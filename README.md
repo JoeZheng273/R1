@@ -1,5 +1,5 @@
 本代码依赖STM32F427芯片，移植到其他芯片自行替换中间件。
-XHU_RRC_LIB是西华大学机器人研究中心的代码库，西华大学机器人研究中心保留所有权利。
+XHU_RRC_LIB是西华大学机器人研究中心的代码库，西华大学机器人研究中心保留XHU_RRC_LIB所有权利。
 
 以下表格为机器人接线表，其中M2006指的是DJI RM M2006电机，
 而Motor_0,Motor_1,Motor_2,Motor_3,Master,Server均为DJI RM M3508电机。
