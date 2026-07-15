@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : platform.h
+  * @brief          : 机器人升降平台
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __PLATFORM_H
 #define __PLATFORM_H
 

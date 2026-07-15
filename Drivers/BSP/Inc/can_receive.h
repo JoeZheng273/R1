@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : can_receive.h
+  * @brief          : CAN通信接收驱动
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __CAN_RECEIVE_H
 #define __CAN_RECEIVE_H
 

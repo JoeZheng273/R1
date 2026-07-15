@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : remote_ctrl.c
+  * @brief          : 遥控器数据接收与处理
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "remote_ctrl.h"
 #include "usart.h"
 #include "crc.h"

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : safe_task.c
+  * @brief          : 机器人状态安全检查
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "safe_task.h"
 #include "Critical_Section.h"
 #include "gpio.h"

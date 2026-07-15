@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : safe_task.h
+  * @brief          : 机器人状态安全检查
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __SAFE_TASK_H
 #define __SAFE_TASK_H
 

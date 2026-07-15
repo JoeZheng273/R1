@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : module_Interface_fops_set.h
+  * @brief          : 一些模块接口的虚函数表
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __MODULE_INTERFACE_FOPS_SET_H
 #define __MODULE_INTERFACE_FOPS_SET_H
 

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : user_keymapping.c
+  * @brief          : 操作手遥控器键位映射
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "stdint.h"
 #include "stdio.h"
 #include "safe_task.h"

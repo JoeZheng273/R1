@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : robot_arm.c
+  * @brief          : 机器人拾取装置
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "robot_arm.h"
 #include "Critical_Section.h"
 #include "platform.h"

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : debug_assistant.h
+  * @brief          : 调试助手
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "debug_assistant.h"
 #include "bsp_led.h"
 #include "main.h"

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : PROJECT_MACRO.h
+  * @brief          : 一些工程中的宏
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __PROJECT_MACRO_H
 #define __PROJECT_MACRO_H
 

@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : chassis.c
+  * @brief          : 机器人底盘
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #include "chassis.h"
 #include "Critical_Section.h"
 #include "main.h"

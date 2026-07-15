@@ -1,3 +1,14 @@
+/**
+  ******************************************************************************
+  * @file           : bsp_led.h
+  * @brief          : LED指示灯驱动
+  *
+  * Copyright (c) 2026 Joe Zheng, XHU-RRC and 阿加犀(APLUX).
+  *
+  * SPDX-License-Identifier: MIT
+  *
+  ******************************************************************************
+***/
 #ifndef __BSP_LED_H
 #define __BSP_LED_H
 
