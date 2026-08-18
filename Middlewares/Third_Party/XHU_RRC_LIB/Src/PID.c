@@ -23,30 +23,30 @@
 /*---------------------------------------------------*/
 struct PID_InstanceTypeDef
 {
-  unsigned int _Flag;                      /*!<  各项的使能标志位          */
-	float _Kf;                               /*!<  前馈项系数                */
-	float _Kp;                               /*!<  比例项系数                */
-	float _Ki;                               /*!<  积分项系数                */
-	float _Kd;                               /*!<  微分项系数                */
-  float _Alpha;                            /*!<  一阶滤波的系数            */
-  float _Epsilon;                          /*!<  误差死区                  */
-	float _Summax;                           /*!<  积分限幅                  */
-	float _Outputmax;                        /*!<  输出限幅                  */
-	float _SumOp_region;                     /*!<  积分有效区间              */
-  float _dt;                               /*!<  采样时间,unit: s          */
-  float _recp_dt;                          /*!<  采样时间的倒数,unit: 1/s  */
-  Forward_func_t  _Forward;                /*!<  前馈回调函数              */
-  SumDecay_func_t _SumDecay;               /*!<  积分衰减回调函数          */
-  float _Sum;                              /*!<  积分求和                  */
-	float _last_Err;                         /*!<  上次误差                  */
-	float _Err;                              /*!<  本次误差                  */
-	float _Change;                           /*!<  两次误差之间的改变量      */
-  float _Change_filt;                      /*!<  一阶滤波后的Change        */
-	float _Output_f;                         /*!<  原始计算得到的输出值      */
-	float _F_term;                           /*!<  前馈项                    */
-	float _P_term;                           /*!<  比例项                    */
-	float _I_term;                           /*!<  积分项                    */
-	float _D_term;                           /*!<  微分项                    */
+  volatile unsigned int _Flag;                      /*!<  各项的使能标志位          */
+	volatile float _Kf;                               /*!<  前馈项系数                */
+	volatile float _Kp;                               /*!<  比例项系数                */
+	volatile float _Ki;                               /*!<  积分项系数                */
+	volatile float _Kd;                               /*!<  微分项系数                */
+  volatile float _Alpha;                            /*!<  一阶滤波的系数            */
+  volatile float _Epsilon;                          /*!<  误差死区                  */
+	volatile float _Summax;                           /*!<  积分限幅                  */
+	volatile float _Outputmax;                        /*!<  输出限幅                  */
+	volatile float _SumOp_region;                     /*!<  积分有效区间              */
+  volatile float _dt;                               /*!<  采样时间,unit: s          */
+  volatile float _recp_dt;                          /*!<  采样时间的倒数,unit: 1/s  */
+  Forward_func_t  _Forward;                         /*!<  前馈回调函数              */
+  SumDecay_func_t _SumDecay;                        /*!<  积分衰减回调函数          */
+  volatile float _Sum;                              /*!<  积分求和                  */
+	volatile float _last_Err;                         /*!<  上次误差                  */
+	volatile float _Err;                              /*!<  本次误差                  */
+	volatile float _Change;                           /*!<  两次误差之间的改变量      */
+  volatile float _Change_filt;                      /*!<  一阶滤波后的Change        */
+	volatile float _Output_f;                         /*!<  原始计算得到的输出值      */
+	volatile float _F_term;                           /*!<  前馈项                    */
+	volatile float _P_term;                           /*!<  比例项                    */
+	volatile float _I_term;                           /*!<  积分项                    */
+	volatile float _D_term;                           /*!<  微分项                    */
 };
 
 /*-------------------------------------------------------*/
@@ -128,13 +128,6 @@ PID_Status PIDf_Control(float SP, float PV, PID_t pPID_Instance, int *pCO)
         if((pPID_Instance->_Err <= pPID_Instance->_Epsilon)
             &&(pPID_Instance->_Err >= -pPID_Instance->_Epsilon))
         { pPID_Instance->_Err = 0.0f; }
-        /* 检验P项参数有效与使能位. */
-        if((pPID_Instance->_Kp >= __PID_Float_Epsilon)
-            &&(pPID_Instance->_Flag & __PID_P_Enable))
-        {
-          pPID_Instance->_P_term = pPID_Instance->_Kp * pPID_Instance->_Err;
-          Tmp += pPID_Instance->_P_term;
-        }
         /* 检验F项参数有效与使能位. */
         if((pPID_Instance->_Kf >= __PID_Float_Epsilon)
             &&(pPID_Instance->_Flag & __PID_F_Enable))
@@ -154,6 +147,13 @@ PID_Status PIDf_Control(float SP, float PV, PID_t pPID_Instance, int *pCO)
             (pPID_Instance->_Flag) &= (~__PID_F_Enable);
             tReturn |= PID_WARN_1;
           }
+        }
+        /* 检验P项参数有效与使能位. */
+        if((pPID_Instance->_Kp >= __PID_Float_Epsilon)
+            &&(pPID_Instance->_Flag & __PID_P_Enable))
+        {
+          pPID_Instance->_P_term = pPID_Instance->_Kp * pPID_Instance->_Err;
+          Tmp += pPID_Instance->_P_term;
         }
         /* 检验I项参数有效与使能位. */
         if((pPID_Instance->_Ki >= __PID_Float_Epsilon)
