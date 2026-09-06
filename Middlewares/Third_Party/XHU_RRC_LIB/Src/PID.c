@@ -135,8 +135,8 @@ PID_Status PIDf_Control(float SP, float PV, PID_t pPID_Instance, int *pCO)
           /* 检验自定义前馈回调函数指针 */
           if(pPID_Instance->_Forward != NULL)
           {
-            pPID_Instance->_F_term = (pPID_Instance->_Forward(SP,pPID_Instance))
-             * pPID_Instance->_Kf;
+            float f_tmp = pPID_Instance->_Forward(SP,pPID_Instance);
+            pPID_Instance->_F_term = f_tmp * pPID_Instance->_Kf;
             Tmp += pPID_Instance->_F_term;
           }
           else
