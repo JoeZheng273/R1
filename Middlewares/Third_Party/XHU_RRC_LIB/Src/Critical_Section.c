@@ -3,7 +3,9 @@
 #include "stdint.h"
 
 #if (!(libUSE_FREERTOS))
-#include "main.h"
+// 此处应该包含所使用的芯片的总头文件，例如STM32F4系列，就 #include "stm32f4xx.h"。
+#include "stm32f4xx.h"
+/* -------------------------------以下无需修改------------------------------- */
 static uint32_t primask[configCRITICAL_NEST_DEPTH_MAX] = {0};
 static uint32_t Counter = 0;
 #else
